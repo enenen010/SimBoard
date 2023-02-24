@@ -1,5 +1,7 @@
 package com.bit.framework.web;
 
-public interface Controller {
+import javax.servlet.http.HttpServletRequest;
 
+public interface Controller {
+	String execute(HttpServletRequest req);
 }

@@ -4,4 +4,12 @@
       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
       version="3.0">
   <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+  	<servlet-name>oneforall</servlet-name>
+  	<servlet-class>com.bit.framework.web.DispatchServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>oneforall</servlet-name>
+  	<url-pattern>*.do</url-pattern>
+  </servlet-mapping>
 </web-app>
