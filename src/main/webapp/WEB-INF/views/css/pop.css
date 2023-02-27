@@ -1,0 +1,44 @@
+@charset "UTF-8";
+    #alert{
+        position: fixed;
+        display: none;
+        background-color: rgba(0,0,0,0.3); 
+        justify-content:center; 
+  		align-items:center;     
+  		position:fixed;         
+  		top:0;
+  		left:0;
+  		right:0;
+  		bottom:0;               
+    }
+    #alert>div{
+        width: 500px;
+        height: 300px;
+        background-color: rgb(50, 50, 50);
+        border: 2px solid gray;
+        border-radius: 20px;
+    }
+    #alert>div>div:first-child{
+        color: aliceblue;
+        width: 500px;
+        height: 250px;
+        text-align: center;
+        line-height: 250px;
+        font-size: 15pt;
+        font-weight: 3pt;
+    }
+    #alert>div>div:last-child{}
+    #alert>div>div:last-child>a{
+    	margin: 0px auto;
+        background-color: saddlebrown;
+        border: 2px solid gray;
+        border-radius: 10px;
+        color: aliceblue;
+        display: block;
+        width: 100px;
+        height: 35px;
+        text-align: center;
+        text-decoration: none;
+        line-height: 35px;
+        font-family : TmonMonsori, "GodoB", "굴림";
+    }

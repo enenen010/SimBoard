@@ -3,8 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<style type="text/css">
+
+</style>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+var loadList=function(content,id){
+	$.ajax({
+		  url: 'board/list.do',
+		  type: 'get',
+		  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+		  data: {content:content,id:id},
+		  dataType: "json",
+		  success: function(data){
+					var list = data.list;
+					for(var i=0; i<list.length; i++){
+						var row = $('<div/>')
+							.append($('<span/>').text(i))
+							.append($('<span/>').text(list[i].sub))
+							.append($('<span/>').text(list[i].id))
+							.append($('<span/>').text(list[i].wDate));
+						$('#listPage .table>.tbody')
+							.append(row);
+					}
+					},
+		  error: function(xhr,status,err){
+			  alert("에러("+status+")");
+			  console.log(err);
+		  }
+		});
+}
+var loadDetail=function(nqid){
+	$.ajax({
+		url: 'board/detail.do',
+		type: 'get',
+		contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+		data: {nqid:nqid},
+		dataType: 'json',
+		success: function(data){
+			$('#detailPage>form').children()
+				  .eq(1).find('input').val(data.obj.sub)
+			.end().eq(2).find('input').val(data.obj.id)
+			.end().eq(3).find('#textEditer').val(data.obj.content);
+		},
+		error: function(xhr,status,err){
+			console.log(err);
+		}
+	})
+}
+$(function(){
+	loadList();
+	loadDetail('nq001');
+});
+
+</script>
 </head>
 <body>
-<h1>성공이다다다다</h1>
+<div id="listPage">
+	<h2>게시글</h2>
+	<div class="table">
+		<div class="thead">
+			<span>no</span>
+			<span>제목</span>
+			<span>글쓴이</span>
+			<span>날짜</span>
+		</div>
+		<div class="tbody"></div>
+	</div>
+</div>
+<div id="detailPage">
+	<h2>글쓰기</h2>
+	<form method="post">
+		<div>
+			<button class="add" type="submit">입력</button>
+			<a href="#">수정</a>
+			<button class="delete" type="submit">삭제</button>
+		</div>
+		<div>
+			<span>제목</span>
+			<span><input type="text"></span>
+		</div>
+		<div>
+			<span>작성자</span>
+			<span><input type="text"></span>
+		</div>
+		<div>
+			<span>내용</span>
+			<div>
+				<div id="textEditer"></div>
+			</div>
+		</div>
+	</form>
+</div>
 </body>
 </html>
