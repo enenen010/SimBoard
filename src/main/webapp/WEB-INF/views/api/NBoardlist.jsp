@@ -17,5 +17,6 @@
 "wDate":"${row.wDate}"
 }
 </c:forEach>
-]
+],
+"pageMax":${pageMax}
 }

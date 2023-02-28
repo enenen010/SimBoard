@@ -34,6 +34,26 @@ public class JdbcTemplate<T> {
 	}
 	
 	
+	public int queryForInt(String sql, Object ... args) {
+		try(
+				Connection conn = dataSource.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+			) {
+			for(int i=0; i<args.length; i++) {
+				pstmt.setObject(i+1, args[i]);
+			}
+			ResultSet rs = pstmt.executeQuery();
+			int result=0;
+			if(rs.next())
+				result= (int)rs.getLong(1);
+			return result;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
 	public int queryUpdate(String sql, Object ... args) {
 		try(
 				Connection conn = dataSource.getConnection();

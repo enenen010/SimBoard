@@ -4,9 +4,113 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <style type="text/css">
+* {box-sizing: border-box; margin: 0; padding: 0;}
+#listPage{
+	padding-top: 80px;
+	margin: 0px auto;
+	width: 1000px;
+	height: 800px;
+}
+#listPage>h2{
+	display: block;
+	margin: 0px auto;
+	width: 100px;
+	height: 35px;
+	color: #2d1700;
+	font-size: 30pt;
+	white-space: nowrap;
+}
+#listPage>.table{
+	margin: 0px auto;
+	margin-top: 80px;
+	width: 850px;
+	height: 550px;
+	border-top: 2px solid #2d1700;
+}
+#listPage>.table div>span,#listPage>.table div>a{
+	display: inline-block;
+	height: 50px;
+	text-align: center;
+	line-height: 50px;
+	border-bottom: 1px solid #e2e2e2;
+}
+#listPage>.table div>span:nth-child(1){width: 48px;}
+#listPage>.table div>span:nth-child(2){width: 400px;}
+#listPage>.table div>span:nth-child(3){width: 200px;}
+#listPage>.table div>span:nth-child(4){width: 200px;}
+#listPage>.table div>a{width: 400px;}
+
+#listPage>#pageList{
+	margin: 0px auto;
+	margin-top: 10px;
+	width: 1px;
+	height: 35px;
+}
+#listPage>#pageList>a{
+	display: inline-block;
+	margin: 0px auto;
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	line-height: 30px;
+	background-color: gray;
+}
+</style>
+<style type="text/css">
+* {box-sizing: border-box; margin: 0; padding: 0;}
+#detailPage{
+	position: fixed;
+   	left: 0; right: 0; top: 50px; bottom: 0;
+	margin: 0px auto;
+	width: 850px;
+	height: 650px;
+	background-color: white;
+	border: 2px solid gray;
+	border-radius: 10px;
+}
+#detailPage>button{
+	float: right;
+	margin-right: 30px;
+	margin-top: 30px;
+}
+#detailPage>h2{
+	display: block;
+	margin: 0px auto;
+	width: 100px;
+	height: 35px;
+	color: #2d1700;
+	font-size: 30pt;
+	white-space: nowrap;
+}
+#detailPage>form{
+	display: block;
+	margin: 0px auto;
+	width: 700px;
+	height: 650px;
+	background-color: red;
+	margin-top: 50px;
+}
+#detailPage>form>div{}
+#detailPage>form>div:nth-child(1){
+	float: right;
+	margin-right: 30px;
+}
+#detailPage>form>div:nth-child(2){clear: both;}
+#detailPage>form>div>button,#detailPage>form>div>a{}
+#detailPage>form>div>span{}
+#detailPage>form>div>span:nth-child(1){
+	display: inline-block;
+	width: 200px;
+	height: 50px;
+	color: #2d1700;
+}
+#detailPage>form>div>span:nth-child(2){}
+#detailPage>form>div>span>input{}
+#detailPage>form>div>div{} 
+#detailPage>form>div>div>.textEditer{}
 
 </style>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="/SimBoard/js/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
 var loadList=function(content,id){
 	$.ajax({
@@ -20,11 +124,15 @@ var loadList=function(content,id){
 					for(var i=0; i<list.length; i++){
 						var row = $('<div/>')
 							.append($('<span/>').text(i))
-							.append($('<span/>').text(list[i].sub))
+							.append($('<a/>').prop('href','#'+(i+1)).text(list[i].sub))
 							.append($('<span/>').text(list[i].id))
 							.append($('<span/>').text(list[i].wDate));
 						$('#listPage .table>.tbody')
 							.append(row);
+					}
+					for(var i=0; i<data.pageMax; i++){
+						$('#pageList')
+							.append($('<a/>').prop('href','#'+(i+1)).text('['+(i+1)+']'));
 					}
 					},
 		  error: function(xhr,status,err){
@@ -41,10 +149,11 @@ var loadDetail=function(nqid){
 		data: {nqid:nqid},
 		dataType: 'json',
 		success: function(data){
+			var obj = data.obj;
 			$('#detailPage>form').children()
-				  .eq(1).find('input').val(data.obj.sub)
-			.end().eq(2).find('input').val(data.obj.id)
-			.end().eq(3).find('#textEditer').val(data.obj.content);
+			        .eq(1).find('input').val(obj.sub)
+  		.end().end().eq(2).find('input').val(obj.id)
+		.end().end().eq(3).find('#textEditer').html(obj.content);
 		},
 		error: function(xhr,status,err){
 			console.log(err);
@@ -63,15 +172,14 @@ $(function(){
 	<h2>게시글</h2>
 	<div class="table">
 		<div class="thead">
-			<span>no</span>
-			<span>제목</span>
-			<span>글쓴이</span>
-			<span>날짜</span>
+			<span>no</span><span>제목</span><span>글쓴이</span><span>날짜</span>
 		</div>
 		<div class="tbody"></div>
 	</div>
+	<div id="pageList"></div>
 </div>
 <div id="detailPage">
+	<button>X</button>
 	<h2>글쓰기</h2>
 	<form method="post">
 		<div>
@@ -81,16 +189,16 @@ $(function(){
 		</div>
 		<div>
 			<span>제목</span>
-			<span><input type="text"></span>
+			<span><input type="text" class="sub"></span>
 		</div>
 		<div>
 			<span>작성자</span>
-			<span><input type="text"></span>
+			<span><input type="text" class="user"></span>
 		</div>
 		<div>
 			<span>내용</span>
 			<div>
-				<div id="textEditer"></div>
+				<div class="textEditer"></div>
 			</div>
 		</div>
 	</form>

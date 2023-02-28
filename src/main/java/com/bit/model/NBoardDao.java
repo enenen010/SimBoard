@@ -34,6 +34,13 @@ public class NBoardDao {
 		this.dataSource = dataSource;
 	}
 	
+	public int SelectCount(String content,String id) {
+		JdbcTemplate<NBoardDto> jdbcTemplate = new JdbcTemplate<NBoardDto>(dataSource);
+		String sql="select count(nqid) from NBOARD where nqid like ? and id like ?";
+		int result = jdbcTemplate.queryForInt(sql, "%"+content+"%","%"+id+"%");
+		return result;
+	}
+	
 	public List<NBoardDto> SelectList(String content,String id) {
 		JdbcTemplate<NBoardDto> jdbcTemplate = new JdbcTemplate<NBoardDto>(dataSource);
 		String sql="select * from NBOARD where nqid like ? and id like ?";
