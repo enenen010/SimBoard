@@ -92,7 +92,8 @@ public class DispatchServlet extends HttpServlet{
 	protected void doDo(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String viewPath = req.getRequestURI().substring(req.getContextPath().length());//context 까지의 경로 편집
 		System.out.println(viewPath+":  "+handler.get(viewPath));
-		String result=handler.get(viewPath).execute(req);
+		String result=handler.get(viewPath).execute(req, resp);
+		if(result==null)return;
 		if(result.startsWith("redirect:")) {
 			resp.sendRedirect(result.substring("redirect:".length())+".do");
 		}else {

@@ -12,7 +12,7 @@
 {
 "nqid":"${row.nqid}",
 "sub":"${row.sub}",
-"img":"${row.sub}",
+"img":"${row.img}",
 "id":"${row.id}",
 "wDate":"${row.wDate}"
 }

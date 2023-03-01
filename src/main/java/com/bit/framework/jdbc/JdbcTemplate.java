@@ -45,7 +45,7 @@ public class JdbcTemplate<T> {
 			ResultSet rs = pstmt.executeQuery();
 			int result=0;
 			if(rs.next())
-				result= (int)rs.getLong(1);
+				result= (int)rs.getInt(1);
 			return result;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -88,7 +88,6 @@ public class JdbcTemplate<T> {
 			for(int i=0; i<args.length; i++) {
 				pstmt.setObject(i+1, args[i]);
 			}
-			System.out.println(pstmt);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				list.add(rowMapper.rows(rs));

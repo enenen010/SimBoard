@@ -20,9 +20,27 @@
 	font-size: 30pt;
 	white-space: nowrap;
 }
+#listPage>.add{
+	margin: 0px auto;
+	width: 850px;
+	height: 50px;
+	margin-top: 80px;
+}
+#listPage>.add>a{
+	display: inline-block;
+	width: 80px;
+	height: 35px;
+	border: 1px solid gray;
+	border-radius: 5px;
+	text-decoration: none;
+	float: right;
+	text-align: center;
+	padding-top: 7px;
+	color: #2d1700;
+}
+#listPage>.add>a:hover{background-color: gray;}
 #listPage>.table{
 	margin: 0px auto;
-	margin-top: 80px;
 	width: 850px;
 	height: 550px;
 	border-top: 2px solid #2d1700;
@@ -39,6 +57,7 @@
 #listPage>.table div>span:nth-child(3){width: 200px;}
 #listPage>.table div>span:nth-child(4){width: 200px;}
 #listPage>.table div>a{width: 400px;}
+#listPage>.table div>a:hover{background-color: #e1ebf6; cursor: pointer;}
 
 #listPage>#pageList{
 	margin: 0px auto;
@@ -59,72 +78,105 @@
 <style type="text/css">
 * {box-sizing: border-box; margin: 0; padding: 0;}
 #detailPage{
-	position: fixed;
+	position: absolute;
    	left: 0; right: 0; top: 50px; bottom: 0;
 	margin: 0px auto;
 	width: 850px;
-	height: 650px;
+	height: 550px;
 	background-color: white;
 	border: 2px solid gray;
 	border-radius: 10px;
+	overflow: hidden;
+	display: none;
 }
 #detailPage>button{
 	float: right;
-	margin-right: 30px;
-	margin-top: 30px;
+	margin-right: 15px;
+	margin-top: 3px;
+	background-color: rgba(0,0,0,0);
+	border: 0px;
+	font-size: 30px;
+	width:30px;
+	height:30px;
+	color: gray;
 }
+#detailPage>button:hover{cursor: pointer;}
 #detailPage>h2{
 	display: block;
 	margin: 0px auto;
-	width: 100px;
+	width: 850px;
 	height: 35px;
-	color: #2d1700;
-	font-size: 30pt;
-	white-space: nowrap;
+	color: gray;
+	font-size: 15pt;
+	background-color: #e6edf6;
+	text-decoration: none;
+	padding-left: 10px;
+	padding-top: 5px;
 }
 #detailPage>form{
 	display: block;
 	margin: 0px auto;
 	width: 700px;
-	height: 650px;
-	background-color: red;
+	height: 450px;
 	margin-top: 50px;
 }
-#detailPage>form>div{}
+#detailPage>form>div{border-bottom: 1px solid #e2e2e2;}
 #detailPage>form>div:nth-child(1){
 	float: right;
 	margin-right: 30px;
 }
 #detailPage>form>div:nth-child(2){clear: both;}
 #detailPage>form>div>button,#detailPage>form>div>a{}
-#detailPage>form>div>span{}
-#detailPage>form>div>span:nth-child(1){
+#detailPage>form>div>span{
 	display: inline-block;
-	width: 200px;
-	height: 50px;
 	color: #2d1700;
+	height: 50px;	
+	line-height: 50px;
+	width: 100px;
 }
-#detailPage>form>div>span:nth-child(2){}
-#detailPage>form>div>span>input{}
-#detailPage>form>div>div{} 
-#detailPage>form>div>div>.textEditer{}
-
+#detailPage>form>div>input,#detailPage>form>div>.textEditer{
+	border: 2px;
+	border-style: solid;
+	border-color: #e2e2e2; 
+	border-radius: 5px;
+}
+#detailPage>form>div>input{
+	width: 590px;
+	height: 35px;
+	line-height: 50px; 
+}
+#detailPage>form>div>.textEditer{
+	width: 700px;
+	height: 250px;
+	overflow-y: scroll;
+}
 </style>
 <script src="/SimBoard/js/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
-var loadList=function(content,id){
+	//리스트 관련
+	var loadList=function(sub,id){
+	$('#listPage .table>.tbody>div').remove();
+	$('#pageList>a').remove();
 	$.ajax({
 		  url: 'board/list.do',
 		  type: 'get',
 		  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
-		  data: {content:content,id:id},
+		  data: {sub:sub,id:id},
 		  dataType: "json",
 		  success: function(data){
 					var list = data.list;
 					for(var i=0; i<list.length; i++){
 						var row = $('<div/>')
 							.append($('<span/>').text(i))
-							.append($('<a/>').prop('href','#'+(i+1)).text(list[i].sub))
+							.append($('<a/>').val(list[i].nqid).text(list[i].sub)
+									.click(function(e){
+										loadDetail($(e.target).val());
+										DetailReadOnly();
+										$('#detailPage>form>.btns').children().show()
+										                           .eq(0).hide();
+										$('#detailPage').show();
+										return false;
+									}))
 							.append($('<span/>').text(list[i].id))
 							.append($('<span/>').text(list[i].wDate));
 						$('#listPage .table>.tbody')
@@ -140,7 +192,26 @@ var loadList=function(content,id){
 			  console.log(err);
 		  }
 		});
+	}
+	//디테일 관련
+var DetailWrite=function(){
+	$('#detailPage>form').children()
+		.find('input').prop('readonly',false).css('border','2px solid #e2e2e2')
+  .end().find('.textEditer').prop('contenteditable','true').css('border','2px solid #e2e2e2');
 }
+var DetailReadOnly=function(){
+	$('#detailPage>form').children()
+		.find('input').prop('readonly',true).css('border','0px')
+  .end().find('.textEditer').prop('contenteditable','false').css('border','0px');
+}
+var SetDetail=function(nqid,sub,id,content){
+		$('#detailPage>form').children()
+						.eq(1).find('input').val(sub)
+			.end().end().eq(2).find('input').val(id)
+			.end().end().eq(3).find('.textEditer').html(content)
+			.end().next().val(nqid)
+	}
+
 var loadDetail=function(nqid){
 	$.ajax({
 		url: 'board/detail.do',
@@ -150,10 +221,7 @@ var loadDetail=function(nqid){
 		dataType: 'json',
 		success: function(data){
 			var obj = data.obj;
-			$('#detailPage>form').children()
-			        .eq(1).find('input').val(obj.sub)
-  		.end().end().eq(2).find('input').val(obj.id)
-		.end().end().eq(3).find('#textEditer').html(obj.content);
+			SetDetail(obj.nqid, obj.sub, obj.id, obj.content);
 		},
 		error: function(xhr,status,err){
 			console.log(err);
@@ -163,6 +231,71 @@ var loadDetail=function(nqid){
 $(function(){
 	loadList();
 	loadDetail('nq001');
+	
+	//리스트 페이지 관련
+	$('#listPage>.add>a').click(function name() {//글쓰기
+		SetDetail('', '', '', '');
+		DetailWrite();
+		$('#detailPage>form>.btns').children().hide()
+								   .eq(0).show();
+		$('#detailPage').show();
+		return false;
+	});
+	
+	//디테일 페이지 관련
+	$('#detailPage>button').click(function name() {
+		SetDetail('', '', '', '');
+		$('#detailPage>form>.btns>a')
+			.prev().removeClass('edit').addClass('add').text('입력')
+			.next().removeClass('detailgo').addClass('editgo').text('수정')
+		$('#detailPage').hide();
+	});
+	
+	$('#detailPage>form>.btns>button').click(function name(e) {
+		var url='';
+		var data={};
+
+		var nqid=$('#detailPage>form>.nqid').val();
+		var sub=$('#detailPage>form>div>.sub').val();
+		var id=$('#detailPage>form>div>.user').val();
+		var content=$('#detailPage>form>div>.textEditer').html();
+
+		if($(e.target).hasClass('add')){url='board/add.do'; data={sub:sub,id:id,content:content};}
+		if($(e.target).hasClass('edit')){url='board/edit.do'; data={nqid:nqid,sub:sub,id:id,content:content};}
+		if($(e.target).hasClass('delete')){url='board/delete.do'; data={nqid:nqid};}
+		$.ajax({
+		  url: url,
+		  type: 'post',
+		  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+		  data: data,
+		  dataType: "json",
+		  success: function(data){
+					console.log(data);
+					loadList();
+					$('#detailPage>button').click();
+					},
+		  error: function(xhr,status,err){
+			  alert("에러("+status+":"+err+")");
+			  console.log(err);
+		  }
+		});
+	});
+
+	$('#detailPage>form>.btns>a').click(function(e){
+		if($(e.target).hasClass('editgo')){
+			$(e.target).prev().removeClass('add').addClass('edit').text('수정완료').show()
+			.next().removeClass('editgo').addClass('detailgo').text('수정취소')
+			.next().hide();
+			DetailWrite();
+		}
+		else if($(e.target).hasClass('detailgo')){
+			$(e.target).prev().removeClass('edit').addClass('add').text('입력').hide()
+			.next().removeClass('detailgo').addClass('editgo').text('수정')
+			.next().show();
+			DetailReadOnly();
+		}
+		return false;
+	});
 });
 
 </script>
@@ -170,6 +303,9 @@ $(function(){
 <body>
 <div id="listPage">
 	<h2>게시글</h2>
+	<div class="add">
+		<a href="#">글쓰기</a>
+	</div>
 	<div class="table">
 		<div class="thead">
 			<span>no</span><span>제목</span><span>글쓴이</span><span>날짜</span>
@@ -182,25 +318,24 @@ $(function(){
 	<button>X</button>
 	<h2>글쓰기</h2>
 	<form method="post">
-		<div>
-			<button class="add" type="submit">입력</button>
-			<a href="#">수정</a>
-			<button class="delete" type="submit">삭제</button>
+		<div class="btns">
+			<button class="add" type="button">입력</button>
+			<a href="#" class="editgo">수정</a>
+			<button class="delete" type="button">삭제</button>
 		</div>
 		<div>
 			<span>제목</span>
-			<span><input type="text" class="sub"></span>
+			<input type="text" class="sub">
 		</div>
 		<div>
 			<span>작성자</span>
-			<span><input type="text" class="user"></span>
+			<input type="text" class="user">
 		</div>
 		<div>
 			<span>내용</span>
-			<div>
-				<div class="textEditer"></div>
-			</div>
+			<div class="textEditer"></div>
 		</div>
+		<input type="hidden" class="nqid">
 	</form>
 </div>
 </body>

@@ -34,17 +34,17 @@ public class NBoardDao {
 		this.dataSource = dataSource;
 	}
 	
-	public int SelectCount(String content,String id) {
+	public int SelectCount(String sub,String id) {
 		JdbcTemplate<NBoardDto> jdbcTemplate = new JdbcTemplate<NBoardDto>(dataSource);
-		String sql="select count(nqid) from NBOARD where nqid like ? and id like ?";
-		int result = jdbcTemplate.queryForInt(sql, "%"+content+"%","%"+id+"%");
+		String sql="select count(*) from NBOARD where sub like ? and id like ?";
+		int result = jdbcTemplate.queryForInt(sql, "%"+sub+"%","%"+id+"%");
 		return result;
 	}
 	
-	public List<NBoardDto> SelectList(String content,String id) {
+	public List<NBoardDto> SelectList(String sub,String id) {
 		JdbcTemplate<NBoardDto> jdbcTemplate = new JdbcTemplate<NBoardDto>(dataSource);
-		String sql="select * from NBOARD where nqid like ? and id like ?";
-		List<NBoardDto> list = jdbcTemplate.queryForList(sql, mapper, "%"+content+"%","%"+id+"%");
+		String sql="select * from NBOARD where sub like ? and id like ?";
+		List<NBoardDto> list = jdbcTemplate.queryForList(sql, mapper, "%"+sub+"%","%"+id+"%");
 		return list;
 	}
 	
