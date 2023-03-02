@@ -42,7 +42,7 @@
 #listPage>.table{
 	margin: 0px auto;
 	width: 850px;
-	height: 550px;
+	height: auto;
 	border-top: 2px solid #2d1700;
 }
 #listPage>.table div>span,#listPage>.table div>a{
@@ -60,10 +60,12 @@
 #listPage>.table div>a:hover{background-color: #e1ebf6; cursor: pointer;}
 
 #listPage>#pageList{
+	display:block;
 	margin: 0px auto;
-	margin-top: 10px;
-	width: 1px;
+	margin-top: 20px;
+	width: 850px;
 	height: 35px;
+	text-align: center;
 }
 #listPage>#pageList>a{
 	display: inline-block;
@@ -151,23 +153,23 @@
 	overflow-y: scroll;
 }
 </style>
-<script src="/SimBoard/js/jquery-1.12.4.min.js"></script>
+<script src="http://localhost:8080/SimBoard/js/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
 	//리스트 관련
-	var loadList=function(sub,id){
+	var loadList=function(data1,page,pagemax){
 	$('#listPage .table>.tbody>div').remove();
 	$('#pageList>a').remove();
 	$.ajax({
-		  url: 'board/list.do',
-		  type: 'get',
+		  url: 'http://localhost:8080/SimBoard/board/list.do',
+		  type: 'post',
 		  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
-		  data: {sub:sub,id:id},
+		  data: {sub:sub,id:id,page:page,pagemax:pagemax},
 		  dataType: "json",
 		  success: function(data){
 					var list = data.list;
 					for(var i=0; i<list.length; i++){
 						var row = $('<div/>')
-							.append($('<span/>').text(i))
+							.append($('<span/>').text(list[i].num))
 							.append($('<a/>').val(list[i].nqid).text(list[i].sub)
 									.click(function(e){
 										loadDetail($(e.target).val());
@@ -184,7 +186,12 @@
 					}
 					for(var i=0; i<data.pageMax; i++){
 						$('#pageList')
-							.append($('<a/>').prop('href','#'+(i+1)).text('['+(i+1)+']'));
+						.append($('<a/>').prop('href','#'+(i+1)).text((i+1))
+						.click(function(e){
+										loadList('','',$(e.target).text(),10);
+										
+										return false;
+									}));
 					}
 					},
 		  error: function(xhr,status,err){
@@ -214,7 +221,7 @@ var SetDetail=function(nqid,sub,id,content){
 
 var loadDetail=function(nqid){
 	$.ajax({
-		url: 'board/detail.do',
+		url: 'http://localhost:8080/SimBoard/board/detail.do',
 		type: 'get',
 		contentType:'application/x-www-form-urlencoded; charset=UTF-8',
 		data: {nqid:nqid},
@@ -240,7 +247,11 @@ $(function(){
 								   .eq(0).show();
 		$('#detailPage').show();
 		return false;
-	});
+	})
+	.parent().find('button').click(function(e){
+		$('#listPage>.add').find('select option:selected').val()
+		
+	})
 	
 	//디테일 페이지 관련
 	$('#detailPage>button').click(function name() {
@@ -264,7 +275,7 @@ $(function(){
 		if($(e.target).hasClass('edit')){url='board/edit.do'; data={nqid:nqid,sub:sub,id:id,content:content};}
 		if($(e.target).hasClass('delete')){url='board/delete.do'; data={nqid:nqid};}
 		$.ajax({
-		  url: url,
+		  url: 'http://localhost:8080/SimBoard/'+url,
 		  type: 'post',
 		  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
 		  data: data,
@@ -304,6 +315,12 @@ $(function(){
 <div id="listPage">
 	<h2>게시글</h2>
 	<div class="add">
+		<select class="searchType">
+			<option value="sub">제목</option>
+			<option value="id">작성자</option>
+		</select>
+		<input type="text" class="search">
+		<button type="button">검색</button>
 		<a href="#">글쓰기</a>
 	</div>
 	<div class="table">

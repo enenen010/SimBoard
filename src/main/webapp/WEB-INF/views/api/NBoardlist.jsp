@@ -10,6 +10,7 @@
 ,
 </c:if>
 {
+"num":${sts.index + pageStart + 1},
 "nqid":"${row.nqid}",
 "sub":"${row.sub}",
 "img":"${row.img}",

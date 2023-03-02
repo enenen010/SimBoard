@@ -41,10 +41,10 @@ public class NBoardDao {
 		return result;
 	}
 	
-	public List<NBoardDto> SelectList(String sub,String id) {
+	public List<NBoardDto> SelectList(String sub,String id,int page, int pagemax) {
 		JdbcTemplate<NBoardDto> jdbcTemplate = new JdbcTemplate<NBoardDto>(dataSource);
-		String sql="select * from NBOARD where sub like ? and id like ?";
-		List<NBoardDto> list = jdbcTemplate.queryForList(sql, mapper, "%"+sub+"%","%"+id+"%");
+		String sql="select * from NBOARD where sub like ? and id like ? order by wdate desc LIMIT ?, ?";
+		List<NBoardDto> list = jdbcTemplate.queryForList(sql, mapper, "%"+sub+"%","%"+id+"%", (page-1)*pagemax, pagemax);
 		return list;
 	}
 	

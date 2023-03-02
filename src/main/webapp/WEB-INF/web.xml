@@ -7,6 +7,14 @@
   <welcome-file-list>
   <welcome-file>index.do</welcome-file>
   </welcome-file-list>
+  <filter>
+  	<filter-name>headerSetting</filter-name>
+  	<filter-class>com.bit.ksh.filter.HeaderSetting</filter-class>
+  </filter>
+  <filter-mapping>
+  	<filter-name>headerSetting</filter-name>
+  	<url-pattern>*.do</url-pattern>
+  </filter-mapping>
   <servlet>
   	<servlet-name>oneforall</servlet-name>
   	<servlet-class>com.bit.framework.web.DispatchServlet</servlet-class>

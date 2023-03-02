@@ -88,6 +88,7 @@ public class JdbcTemplate<T> {
 			for(int i=0; i<args.length; i++) {
 				pstmt.setObject(i+1, args[i]);
 			}
+			System.out.println(pstmt);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				list.add(rowMapper.rows(rs));

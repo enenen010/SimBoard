@@ -63,6 +63,6 @@ public class NBoardTest {
 
 	   @Test
 	   public void test1SelectAll() {
-	      assertTrue(dao.SelectList("","").size()>0);
+	      assertTrue(dao.SelectList("","",0,10).size()>0);
 	   }
 }
