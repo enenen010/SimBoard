@@ -128,7 +128,25 @@
 	margin-right: 30px;
 }
 #detailPage>form>div:nth-child(2){clear: both;}
-#detailPage>form>div>button,#detailPage>form>div>a{}
+#detailPage>form>div>button,#detailPage>form>div>a{
+	display: inline-block;
+	width: 60px;
+	height: 25px;
+	border: 1px solid gray;
+	border-radius: 5px;
+	text-decoration: none;
+	text-align: center;
+	line-height: 20px;
+	color: #2d1700;
+	background-color: white;
+	font-size: 13pt;
+	margin-bottom: 0;
+}
+#detailPage>form>div>button:hover,#detailPage>form>div>a:hover{
+	background-color: gray;
+	cursor: pointer;
+}
+
 #detailPage>form>div>span{
 	display: inline-block;
 	color: #2d1700;
@@ -152,18 +170,21 @@
 	height: 250px;
 	overflow-y: scroll;
 }
+#detailPage>.errorview{color: red; background-color: #ffdfd4; width: 100%; display: block;}
 </style>
 <script src="http://localhost:8080/SimBoard/js/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
 	//리스트 관련
 	var loadList=function(data1,page,pagemax){
-	$('#listPage .table>.tbody>div').remove();
-	$('#pageList>a').remove();
-	$.ajax({
+		data1.page = page;
+		data1.pagemax = pagemax;
+		$('#listPage .table>.tbody>div').remove();
+		$('#pageList>a').remove();
+		$.ajax({
 		  url: 'http://localhost:8080/SimBoard/board/list.do',
 		  type: 'post',
 		  contentType:'application/x-www-form-urlencoded; charset=UTF-8',
-		  data: {sub:sub,id:id,page:page,pagemax:pagemax},
+		  data: data1,
 		  dataType: "json",
 		  success: function(data){
 					var list = data.list;
@@ -188,7 +209,7 @@
 						$('#pageList')
 						.append($('<a/>').prop('href','#'+(i+1)).text((i+1))
 						.click(function(e){
-										loadList('','',$(e.target).text(),10);
+										loadList({},$(e.target).text(),10);
 										
 										return false;
 									}));
@@ -236,8 +257,7 @@ var loadDetail=function(nqid){
 	})
 }
 $(function(){
-	loadList();
-	loadDetail('nq001');
+	loadList({});
 	
 	//리스트 페이지 관련
 	$('#listPage>.add>a').click(function name() {//글쓰기
@@ -249,16 +269,18 @@ $(function(){
 		return false;
 	})
 	.parent().find('button').click(function(e){
-		$('#listPage>.add').find('select option:selected').val()
-		
+		var seltype = $(e.target).parent().find('select option:selected').val();
+		var selvalue = $(e.target).prev().val();
+		loadList({[seltype]:selvalue});
 	})
 	
 	//디테일 페이지 관련
-	$('#detailPage>button').click(function name() {
+	$('#detailPage>.exitBtn').click(function name() {
 		SetDetail('', '', '', '');
 		$('#detailPage>form>.btns>a')
 			.prev().removeClass('edit').addClass('add').text('입력')
-			.next().removeClass('detailgo').addClass('editgo').text('수정')
+			.next().removeClass('detailgo').addClass('editgo').text('수정');
+			$('#detailPage>.errorview').text('');
 		$('#detailPage').hide();
 	});
 	
@@ -271,6 +293,20 @@ $(function(){
 		var id=$('#detailPage>form>div>.user').val();
 		var content=$('#detailPage>form>div>.textEditer').html();
 
+		var validcheck = true;
+		$('#detailPage>form>div>:nth-child(2)').not('a').each(function(idx,item){
+			var value = $(this).val();
+			if($(this).hasClass('textEditer'))value=$(this).html();
+
+			if(value==''){
+				$('#detailPage>.errorview').text($(this).prev().text()+'이(가) 입력되지 않았습니다.');
+				validcheck=false;
+				return false;
+			}
+		})
+
+		if(!validcheck)return;
+
 		if($(e.target).hasClass('add')){url='board/add.do'; data={sub:sub,id:id,content:content};}
 		if($(e.target).hasClass('edit')){url='board/edit.do'; data={nqid:nqid,sub:sub,id:id,content:content};}
 		if($(e.target).hasClass('delete')){url='board/delete.do'; data={nqid:nqid};}
@@ -281,9 +317,8 @@ $(function(){
 		  data: data,
 		  dataType: "json",
 		  success: function(data){
-					console.log(data);
-					loadList();
-					$('#detailPage>button').click();
+					loadList({});
+					$('#detailPage>.exitBtn').click();
 					},
 		  error: function(xhr,status,err){
 			  alert("에러("+status+":"+err+")");
@@ -297,12 +332,14 @@ $(function(){
 			$(e.target).prev().removeClass('add').addClass('edit').text('수정완료').show()
 			.next().removeClass('editgo').addClass('detailgo').text('수정취소')
 			.next().hide();
+			$('#detailPage>.errorview').text('');
 			DetailWrite();
 		}
 		else if($(e.target).hasClass('detailgo')){
 			$(e.target).prev().removeClass('edit').addClass('add').text('입력').hide()
 			.next().removeClass('detailgo').addClass('editgo').text('수정')
 			.next().show();
+			$('#detailPage>.errorview').text('');
 			DetailReadOnly();
 		}
 		return false;
@@ -332,7 +369,8 @@ $(function(){
 	<div id="pageList"></div>
 </div>
 <div id="detailPage">
-	<button>X</button>
+	<bitton class="errorview"></bitton>
+	<button class="exitBtn">X</button>
 	<h2>글쓰기</h2>
 	<form method="post">
 		<div class="btns">
